@@ -1,0 +1,242 @@
+import discord
+import json
+import random
+import youtube_dl
+import os
+from discord.ext import commands, tasks
+from random import *
+from itertools import cycle
+
+# def get_prefix(client, message):
+#     with open('prefixes.json', 'r') as f:
+#         prefixes = json.load(f)
+#     return prefixes[str(message.guild.id)]    
+
+client = commands.Bot(command_prefix = '.')
+
+status = cycle(['Visual Studio Code', 'Rocket League', 'In Silence', 'Batman Arkham Knight', 'Batman Arkham City'])
+
+@client.event
+async def on_ready():
+    change_status.start()
+    print('Bot is ready.')
+
+os.chdir('D:\Coding\DiscordBot')
+
+# @client.event
+# async def on_member_join(member):
+#     with open('users.json', 'r') as f:
+#         users = json.load(f)
+
+#     await update_data(users, member)
+
+#     with open('users.json', 'w') as f:
+#         json.dump(users, f)
+
+
+# @client.event
+# async def on_message(message):
+#     with open('users.json', 'r') as f:
+#         users = json.load(f)
+
+#     await update_data(users, message.author)
+#     await add_experience(users, message.author, 5)
+#     await level_up(users, message.author, message.channel)
+
+#     with open('users.json', 'w') as f:
+#         json.dump(users, f)
+
+# async def update_data(users, user):
+#     if not user.id in users:
+#         users[user.id] = {}
+#         users[user.id]['experience'] = 0
+#         users[user.id]['level'] = 1
+
+# async def add_experience(users, user, exp):
+#     users[user.id]['experience'] += exp
+
+# async def level_up(users, user, channel):
+#     experience = users[user.id]['experience']
+#     lvl_start = users[user.id]['level']
+#     lvl_end = int(experience ** (1/4))
+
+#     if lvl_start < lvl_end:
+#         await client.send_message(channel, '{} has leveled up to level {}' .format(user.mention, lvl_end))
+#         users[user.id]['level'] = lvl_end
+
+
+
+
+# @client.event
+# async def on_guild_join(guild):
+#     with open('prefixes.json', 'r') as f:
+#         prefixes = json.load(f)
+    
+#     prefixes[str(message.guild.id)] = '.'
+
+#     with open('prefixes.json', 'w') as f:
+#         json.dump(prefixes, f, indent=4)
+
+# @client.event
+# async def on_guild_remove(guild):
+#     with open('prefixes.json', 'r') as f:
+#         prefixes = json.load(f)
+    
+#     prefixes.pop(str(guild.id))
+
+#     with open('prefixes.json', 'w') as f:
+#         json.dump(prefixes, f, indent=4)
+
+# @client.command()
+# async def changeprefix(ctx, prefix):
+#     with open('prefixes.json', 'r') as f:
+#         prefixes = json.load(f)
+    
+#     prefixes[str(ctx.guild.id)] = prefix 
+
+#     with open('prefixes.json', 'w') as f:
+#         json.dump(prefixes, f, indent=4)
+
+
+
+
+
+
+
+
+
+@client.event
+async def on_member_join(member):
+    print(f'{member} has joined this server.')
+
+@client.event
+async def on_member_remove(member):
+    print(f'{member} has left this server.')
+
+@client.command(aliases=['ping'])
+async def command(ctx):
+    embed=discord.Embed(title='PythonBot', colour=discord.Colour.blue())
+
+    embed.add_field(name='Pong!', value=f'{round(client.latency * 1000)}ms')
+    await ctx.send(embed=embed)
+
+# @client.command(aliases=['8ball', 'test'])
+# async def _8ball(ctx, *, question):
+#     responses = ["It is certain.",
+#                  "It is decidedly so.",
+#                  "Without a doubt.",
+#                  "Yes - definitely.",
+#                  "You may rely on it.",
+#                  "As I see it, yes.",
+#                  "Most likely.",
+#                  "Outlook good.",
+#                  "Yes.",
+#                  "Signs point to yes.",
+#                  "Reply hazy, try again.",
+#                  "Ask again later.",
+#                  "Better not tell you now.",
+#                  "Cannot predict now.",
+#                  "Concentrate and ask again.",
+#                  "Don't count on it.",
+#                  "My reply is no.",
+#                  "My sources say no.",
+#                  "Outlook not so good.",
+#                  "Very doubtful."]
+#     await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
+
+@client.command()
+async def clear(ctx, amount=5):
+    if (ctx.message.author.permissions_in(ctx.message.channel).manage_messages):
+
+         await ctx.channel.purge(limit= amount+1)
+         embed=discord.Embed(title='PythonBot', colour=discord.Colour.blue())
+
+         embed.add_field(name='Cleared a total of', value=amount)
+         await ctx.send(embed=embed)
+
+@client.command()
+async def ban(ctx, member :discord.Member, * ,reason=None):
+    await member.ban(reason=reason)
+
+@client.command()
+async def kick(ctx, member : discord.Member, *, reason=None):
+    await member.kick(reason=reason)
+    await ctx.send(f'Banned {member.mention}')
+
+@client.command()
+async def unban(ctx, *, member):
+    banned_users = await ctx.guild.bans()
+    member_name, member_disriminator = member,split('#')
+
+    for ban_entry in banned_users:
+        user = ban_entry.user
+
+        if (user.name, user.discriminator) == (member_name, member_disriminator):
+            await ctx.guild.unban(user)
+            await ctx.send(f'Unbanned {user.name}#{user.discriminator}')
+            return
+
+
+ydl_opts = {
+    'format': 'bestaudio/best',
+    'postprocessors': [{
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+        'preferredquality': '192',
+    }],
+}   
+
+def endSong(guild, path):
+    os.remove(path)                                   
+
+@client.command(pass_context=True)
+async def play(ctx, url):
+    if not ctx.message.author.voice:
+        await ctx.send('you are not connected to a voice channel')
+        return
+
+    else:
+        channel = ctx.message.author.voice.channel
+
+    voice_client = await channel.connect()
+
+    guild = ctx.message.guild
+
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        file = ydl.extract_info(url, download=True)
+        path = str(file['title']) + "-" + str(file['id'] + ".mp3")
+
+    voice_client.play(discord.FFmpegPCMAudio(path), after=lambda x: endSong(guild, path))
+    voice_client.source = discord.PCMVolumeTransformer(voice_client.source, 1)
+
+    await ctx.send(f'**Music: **{url}')
+
+
+
+
+
+
+@tasks.loop(seconds=5)
+async def change_status():
+    await client.change_presence(activity=discord.Game(next(status)))
+
+@client.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send('Invalid Command, Please try again.')
+
+@clear.error
+async def clear_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send('Error, You are missing permissions')
+
+@clear.error
+async def clear_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArguement):
+        await ctx.send('Please Add The Required Arguement')
+
+
+    
+
+client.run('SecretToken')
+
