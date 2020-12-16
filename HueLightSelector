@@ -1,0 +1,109 @@
+from phue import Bridge
+from ip_address import bridge_ip_address
+import time
+
+
+
+def access_lights(bridge_ip_address):
+    b = Bridge(bridge_ip_address)
+    light_names_list = b.get_light_objects('name')
+    return light_names_list
+
+
+def chill_afternoon():
+    lights = access_lights(bridge_ip_address)
+    for light in lights:
+        lights[light].on = True
+        lights[light].hue = 160
+        lights[light].saturation = 0
+
+def red_alert():
+    lights = access_lights(bridge_ip_address)
+    while True:
+        time.sleep(1)
+        for light in lights:
+            lights[light].on = True
+            lights[light].hue = 239
+            lights[light].saturation = 240
+        time.sleep(1)
+        for light in lights:
+            lights[light].on = False
+            lights[light].hue = 44195
+            lights[light].saturation = 254
+
+def police():
+    lights = access_lights(bridge_ip_address)
+    while True:
+        time.sleep(1)
+        for light in lights:
+            lights[light].on = True
+            lights[light].hue = 239
+            lights[light].saturation = 240
+        time.sleep(1)
+        for light in lights:
+            lights[light].on = True
+            lights[light].hue = 44195
+            lights[light].saturation = 254
+
+def christmas():
+    lights = access_lights(bridge_ip_address)
+    while True:
+        time.sleep(1)
+        for light in lights:
+            lights[light].on = True
+            lights[light].hue = 239
+            lights[light].saturation = 240
+        time.sleep(1)
+        for light in lights:
+            lights[light].on = True
+            lights[light].hue = 20000
+            lights[light].saturation = 240
+        time.sleep(1)
+        for light in lights:
+            lights[light].on = True
+            lights[light].hue = 10000
+            lights[light].saturation = 240
+
+def off():
+    lights = access_lights(bridge_ip_address)
+    while True:
+        time.sleep(1)
+        for light in lights:
+            lights[light].on = False
+            lights[light].hue = 10000
+            lights[light].saturation = 240
+
+def blue():
+    lights = access_lights(bridge_ip_address)
+    while True:
+        time.sleep(1)
+        for light in lights:
+            lights[light].on = True
+            lights[light].hue = 44195
+            lights[light].saturation = 254
+
+Light_selection = input('Please enter a number of the light selection you want.\n1. Chill Afternoon\n2. Red Alert\n3. Police\n4. Christmas\n5. Off\n6. Blue\n')
+
+if Light_selection == '1':
+    if __name__ == '__main__':
+        chill_afternoon()
+
+elif Light_selection == '2':
+    if __name__ == '__main__':
+        red_alert()
+
+elif Light_selection == '3':
+    if __name__ == '__main__':
+        police()
+
+elif Light_selection == '4':
+    if __name__ == '__main__':
+        christmas()
+
+elif Light_selection == '5':
+    if __name__ == '__main__':
+        off()
+
+elif Light_selection == '6':
+    if __name__ == '__main__':
+        blue()
