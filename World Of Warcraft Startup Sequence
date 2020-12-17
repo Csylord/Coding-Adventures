@@ -1,0 +1,66 @@
+from tqdm import tqdm
+import webbrowser
+from phue import Bridge
+import subprocess
+import time
+from ip_address import bridge_ip_address
+
+
+def access_lights(bridge_ip_address):
+    b = Bridge(bridge_ip_address)
+    light_names_list = b.get_light_objects('name')
+    return light_names_list
+
+loop = tqdm(total = 50000, position=0, leave=False)
+for k in range(50000):
+    loop.set_description("Loading World Of Warcraft Grind System...".format(k))
+    loop.update(1)
+loop.close()
+
+print("Lofi System Opened Up")
+time.sleep(1)
+print("Opening Youtube Lofi Stream")
+time.sleep(1)
+loop = tqdm(total = 50000, position=0, leave=False)
+for k in range(50000):
+    loop.set_description("Loading Youtube...".format(k))
+    loop.update(1)
+loop.close()
+
+webbrowser.open_new('https://www.youtube.com/watch?v=DWcJFNfaw9c')
+
+print("Youtube Lofi Opened Up")
+time.sleep(1)
+print("Opening Visual Studio Code")
+time.sleep(1)
+loop = tqdm(total = 50000, position=0, leave=False)
+for k in range(50000):
+    loop.set_description("Loading World Of Warcraft...".format(k))
+    loop.update(1)
+loop.close()
+
+subprocess.Popen('D:\\World of Warcraft\\World Of Warcraft Launcher.exe')
+
+
+print("Changing Light Scheme To Blue")
+loop = tqdm(total = 50000, position=0, leave=False)
+for k in range(50000):
+    loop.set_description("Loading Bridge IP...".format(k))
+    loop.update(1)
+loop.close()
+
+
+print("Changed Light Scheme")
+def blue():
+    lights = access_lights(bridge_ip_address)
+    while True:
+        time.sleep(1)
+        for light in lights:
+            lights[light].on = True
+            lights[light].hue = 44195
+            lights[light].saturation = 254
+
+if __name__ == '__main__':
+        blue()
+
+print("Have a great day sir.")
