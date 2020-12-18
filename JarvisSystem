@@ -1,0 +1,41 @@
+import wolframalpha
+import PySimpleGUI as sg                   
+from tqdm import tqdm
+client = wolframalpha.Client('XXXXXXXXXXXXXXXXXXX')
+
+startup = input("Would you like to bootup Jarvis? Y/N\n")
+
+Startup = True
+while Startup == True:
+    # Start Code If Yes
+    # Loading Bar
+    if startup == "Yes" or startup == "Y":
+        loop = tqdm(total = 10000, position=0, leave=False)
+        for k in range(10000):
+            loop.set_description("Loading...".format(k))
+            loop.update(1)
+        loop.close()
+
+        # Layout of PySimpleGui
+        sg.theme('Black')
+        layout = [  [sg.Text("Enter A Question")],    
+                    [sg.Input()],
+                    [sg.Button('Search')] ]
+
+        window = sg.Window('Jarvis Computer', layout)  
+
+        event, values = window.read()                   
+        res = client.query(values[0])
+        wolfram_res = next(res.results).text
+        sg.PopupNonBlocking(next(res.results).text)
+        
+        
+        window.close()
+
+
+    # Stop Code If Not
+    elif startup == "No" or startup == "N":
+        Startup = False
+
+
+
